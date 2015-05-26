@@ -8,8 +8,6 @@
     <!-- Bootstrap core CSS -->
     <link href="boostrap/css/bootstrap.min.css" rel="stylesheet">
     
-    <script src="ttf2uni.js"></script> 	
-   
   </head>
 
   <body>
@@ -39,33 +37,26 @@
 	      </div>
     	
 
-	<div class="row">
-	       <?php 
-	       	//scan "uploads" folder and display them accordingly
-	       $folder = "uploads";
-	       $results = scandir('uploads');
-	       foreach ($results as $result) {
-	       	if ($result === '.' or $result === '..') continue;
+	       		<?php 
+	       			//scan "uploads" folder and display them accordingly
+	       			$folder = "uploads";
+	       			$results = scandir($folder);
+	       			foreach ($results as $result) {
+	       				if ($result === '.' or $result === '..') continue;
 	      
-		$extension = pathinfo($result, PATHINFO_EXTENSION);
- 
-	       	if ( ($extension == 'rtf') && is_file($folder . '/' . $result) ) {
-	       		echo '
-	       		<div class="col-md-3">
-		       		<div class="thumbnail">
-				       		<p><a href="'.$folder . '/' .$result.'">' .$result. '</a>   	---- RTF Format OK </p>
-				       		<div class="caption">
-				       		<p><a href="txt2uni.php?rtf=' .$folder .'/' .$result.'" class="btn btn-primary btn-xs" role="button">Get Unicode</a></p>
-
-
-			       		</div>
-		       		</div>
-	       		</div>';
-	       	}
-	       }
-	       ?>
-    	</div>
-    	
+					$extension = pathinfo($result, PATHINFO_EXTENSION);
+	       				if ( ($extension == 'rtf') && is_file($folder . '/' . $result) ) {
+						$rtfFile = $folder . '/' .$result;
+						$htmlFile = dirname($rtfFile) .'/'. basename($rtfFile,".$extension") . ".html";
+	       					echo '
+	      					<div class="thumbnail">
+						<p><a href="' .$rtfFile. '">' .$result. '</a></p>
+						<p><a href="' .$htmlFile. '" class="btn btn-primary btn-xs" role="button">See HTML</a></p>
+						<p><form method="get" action="uploads/output.txt"><button class="btn btn-primary btn-xs" type="submit">Download Unicode Text</button></form></p>
+    						</div>';
+	       				}
+	       			}
+	       		?>
     </div> <!-- /container -->
 
   </body>
