@@ -48,11 +48,12 @@
 	       				if ( ($extension == 'rtf') && is_file($folder . '/' . $result) ) {
 						$rtfFile = $folder . '/' .$result;
 						$htmlFile = dirname($rtfFile) .'/'. basename($rtfFile,".$extension") . ".html";
+						$uniFile = dirname($rtfFile) .'/'. basename($rtfFile,".$extension") . ".txt";
 	       					echo '
 	      					<div class="thumbnail">
 						<p><a href="' .$rtfFile. '">' .$result. '</a></p>
 						<p><a href="' .$htmlFile. '" class="btn btn-primary btn-xs" role="button">See HTML</a></p>
-						<p><form method="get" action="uploads/output.txt"><button class="btn btn-primary btn-xs" type="submit">Download Unicode Text</button></form></p>
+						<p><form method="get" action="' .$uniFile. '"><button class="btn btn-primary btn-xs" type="submit">Download Unicode Text</button></form></p>
     						</div>';
 	       				}
 	       			}

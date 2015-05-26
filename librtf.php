@@ -29,10 +29,44 @@
 
 function rtfToUnicode($rtfName)
 {
-	//$txtName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".txt";
 	$txtName = "uploads/tedout.txt"; 
+	$uniName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".txt";
 	exec("/usr/bin/Ted --saveTo " .$rtfName. " " .$txtName);
-	exec("/usr/local/bin/node txt2uni.js");
+	exec("/usr/bin/node txt2uni.js " .$uniName);
+
+	$uniCode = file_get_contents($uniName);
+
+	$htmlName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".html";
+	file_put_contents($htmlName, "
+<!DOCTYPE html>
+<html lang=\"en\">
+  <head>
+    <meta charset=\"utf-8\">
+    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+    <title>Convert RTF to Unicode</title>
+
+    <link href=\"../boostrap/css/bootstrap.min.css\" rel=\"stylesheet\">
+    
+  </head>
+
+  <body>
+
+    <div class=\"navbar navbar-default navbar-static-top\">
+      <div class=\"container\">
+        <div class=\"navbar-header\">
+          <a class=\"navbar-brand\" href=\"index.php\">Convert RTF to Unicode</a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class=\"container\">
+    
+	      <div class=\"row\">
+	<p><a href=\"..\" class=\"btn btn-primary btn-xs\" role=\"button\">Go Back</a></p>
+	");
+	file_put_contents($htmlName, $uniCode, FILE_APPEND | LOCK_EX);
+	file_put_contents($htmlName, "</div></body></html>", FILE_APPEND | LOCK_EX);
 
     	/*
 	$legacyCode = file_get_contents($txtName);

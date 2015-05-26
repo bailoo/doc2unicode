@@ -99,7 +99,7 @@ var array_two = new Array("","","ûÊ","ईं","aÊ","aÍ","dÊ","aÊ",
     	var modified_substring = fs.readFileSync("uploads/tedout.txt","utf8"); 
 
     	Replace_Symbols( );
-     	fs.writeFileSync("uploads/output.txt", modified_substring);	
+     	fs.writeFileSync(process.argv[2], modified_substring);	
    	 
 
 // --------------------------------------------------
