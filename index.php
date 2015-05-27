@@ -41,7 +41,17 @@
 	       			//scan "uploads" folder and display them accordingly
 	       			$folder = "uploads";
 	       			$results = scandir($folder);
-	       			foreach ($results as $result) {
+				$ignored = array('.', '..', '.svn', '.htaccess');
+				$files = array();    
+    				foreach ($results as $file) {
+       	 				if (in_array($file, $ignored)) continue;
+        				$files[$file] = filemtime($folder . '/' . $file);
+    				}
+
+    				arsort($files);
+    				$files = array_keys($files);
+
+	       			foreach ($files as $result) {
 	       				if ($result === '.' or $result === '..') continue;
 	      
 					$extension = pathinfo($result, PATHINFO_EXTENSION);
