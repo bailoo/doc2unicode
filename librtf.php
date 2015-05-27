@@ -29,11 +29,11 @@
 
 function rtfToUnicode($rtfName)
 {
-	$txtName = "uploads/tedout.txt"; 
+	$txtName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . "_foo.txt";
 	$uniName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".txt";
 	exec("/usr/bin/Ted --saveTo " .$rtfName. " " .$txtName);
-	exec("/usr/bin/node txt2uni.js " .$uniName);
-
+	exec("/usr/bin/node txt2uni.js " .$txtName. " " .$uniName);
+	exec("/bin/mv -f " .$rtfName. " history");
 	$uniCode = file_get_contents($uniName);
 
 	$htmlName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".html";

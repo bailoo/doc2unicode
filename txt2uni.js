@@ -96,10 +96,10 @@ var array_two = new Array("","","ûÊ","ईं","aÊ","aÍ","dÊ","aÊ",
 
     	var array_one_length = array_one.length ;
 	var fs = require("fs");	
-    	var modified_substring = fs.readFileSync("uploads/tedout.txt","utf8"); 
+    	var modified_substring = fs.readFileSync(process.argv[2],"utf8"); 
 
     	Replace_Symbols( );
-     	fs.writeFileSync(process.argv[2], modified_substring);	
+     	fs.writeFileSync(process.argv[3], modified_substring);	
    	 
 
 // --------------------------------------------------
