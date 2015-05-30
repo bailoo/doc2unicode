@@ -1,75 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Convert RTF to Unicode</title>
+<?php
+/**
+ * The main template file
+ *
+ * This is the most generic template file in a WordPress theme and one
+ * of the two required files for a theme (the other being style.css).
+ * It is used to display a page when nothing more specific matches a query,
+ * e.g., it puts together the home page when no home.php file exists.
+ *
+ * @link https://codex.wordpress.org/Template_Hierarchy
+ *
+ * @package WordPress
+ * @subpackage Twenty_Fourteen
+ * @since Twenty Fourteen 1.0
+ */
 
-    <!-- Bootstrap core CSS -->
-    <link href="boostrap/css/bootstrap.min.css" rel="stylesheet">
-    
-  </head>
+get_header(); ?>
 
-  <body>
+<div id="main-content" class="main-content">
 
-    <!-- Static navbar -->
-    <div class="navbar navbar-default navbar-static-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="index.php">Convert RTF to Unicode</a>
-        </div>
-      </div>
-    </div>
+<?php
+	if ( is_front_page() && twentyfourteen_has_featured_posts() ) {
+		// Include the featured content template.
+		get_template_part( 'featured-content' );
+	}
+?>
 
+	<div id="primary" class="content-area">
+		<div id="content" class="site-content" role="main">
 
-    <div class="container">
-    
-	      <div class="row">
-	      	<div class="col-lg-12">
-	           <form class="well" action="upload.php" method="post" enctype="multipart/form-data">
-				  <div class="form-group">
-				    <label for="file">Select an RTF file to upload</label>
-				    <input type="file" name="file">
-				  </div>
-				  <input type="submit" class="btn btn-lg btn-primary" value="Upload">
-				</form>
-			</div>
-	      </div>
-    	
+		<?php
+			if ( have_posts() ) :
+				// Start the Loop.
+				while ( have_posts() ) : the_post();
 
-	       		<?php 
-	       			//scan "uploads" folder and display them accordingly
-	       			$folder = "uploads";
-	       			$results = scandir($folder);
-				$ignored = array('.', '..', '.svn', '.htaccess');
-				$files = array();    
-    				foreach ($results as $file) {
-       	 				if (in_array($file, $ignored)) continue;
-        				$files[$file] = filemtime($folder . '/' . $file);
-    				}
+					/*
+					 * Include the post format-specific template for the content. If you want to
+					 * use this in a child theme, then include a file called called content-___.php
+					 * (where ___ is the post format) and that will be used instead.
+					 */
+					get_template_part( 'content', get_post_format() );
 
-    				arsort($files);
-    				$files = array_keys($files);
+				endwhile;
+				// Previous/next post navigation.
+				twentyfourteen_paging_nav();
 
-	       			foreach ($files as $result) {
-	       				if ($result === '.' or $result === '..') continue;
-	      
-					$extension = pathinfo($result, PATHINFO_EXTENSION);
-	       				if ( ($extension == 'rtf') && is_file($folder . '/' . $result) ) {
-						$rtfFile = $folder . '/' .$result;
-						$htmlFile = dirname($rtfFile) .'/'. basename($rtfFile,".$extension") . ".html";
-						$uniFile = dirname($rtfFile) .'/'. basename($rtfFile,".$extension") . ".txt";
-	       					echo '
-	      					<div class="thumbnail">
-						<p><a href="' .$rtfFile. '">' .$result. '</a></p>
-						<p><a href="' .$htmlFile. '" class="btn btn-primary btn-xs" role="button">See HTML</a></p>
-						<p><form method="get" action="' .$uniFile. '"><button class="btn btn-primary btn-xs" type="submit">Download Unicode Text</button></form></p>
-    						</div>';
-	       				}
-	       			}
-	       		?>
-	      
-    </div> <!-- /container -->
+			else :
+				// If no content, include the "No posts found" template.
+				get_template_part( 'content', 'none' );
 
-  </body>
-</html>
+			endif;
+		?>
+
+		</div><!-- #content -->
+	</div><!-- #primary -->
+	<?php get_sidebar( 'content' ); ?>
+</div><!-- #main-content -->
+
+<?php
+get_sidebar();
+get_footer();

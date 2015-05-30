@@ -3,11 +3,15 @@
 require_once 'librtf.php';
 
 //turn on php error reporting
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	
+//if ( ! function_exists( 'wp_handle_upload' ) ) require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') 
+{
+
+	$uploadedfile = $_FILES['file'];	
 	$name     = $_FILES['file']['name'];
 	$tmpName  = $_FILES['file']['tmp_name'];
 	$error    = $_FILES['file']['error'];
@@ -29,11 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			}
 			//upload file
 			if ($valid) {
-				$targetPath =  dirname( __FILE__ ) . DIRECTORY_SEPARATOR. 'uploads' . DIRECTORY_SEPARATOR. $name;
-				move_uploaded_file($tmpName,$targetPath); 
-				rtfToUnicode($targetPath);
-				header( 'Location: index.php' ) ;
-				exit;
+				$upload_overrides = array( 'test_form' => false );
+				$movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
+				//$targetPath =  dirname( __FILE__ ) . DIRECTORY_SEPARATOR. 'uploads' . DIRECTORY_SEPARATOR. $name;
+				//move_uploaded_file($tmpName,$targetPath); 
+				if ( $movefile ) {
+					var_dump($movefile);
+					rtfToUnicode($targetPath);
+					//header( 'Location: index.php' ) ;
+					exit;
+				} else {
+					echo $movefile['error'];
+				}
 			}
 			break;
 		case UPLOAD_ERR_INI_SIZE:

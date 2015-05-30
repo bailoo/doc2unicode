@@ -95,11 +95,10 @@ var array_two = new Array("","","ûÊ","ईं","aÊ","aÍ","dÊ","aÊ",
 //**************************************************************************************
 
 var array_one_length = array_one.length;
-var fs = require("fs");	
-var modified_substring = fs.readFileSync(process.argv[2],"utf8");
 
+fs=require('fs');
+var modified_substring = fs.readFileSync('/dev/stdin').toString();
 Replace_Symbols( );
-//fs.writeFileSync(process.argv[3], modified_substring);
 console.log(modified_substring);
 
 // --------------------------------------------------

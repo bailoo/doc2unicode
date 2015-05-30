@@ -1,5 +1,8 @@
 <?php
 
+require __DIR__ . '/vendor/autoload.php';
+use PHPHtmlParser\Dom;
+
 //require_once "rtfclass.php";
 
 /* convert rtf to unicode text */
@@ -26,15 +29,28 @@
 
 /* convert rtf to txt using Ted */
 /* convert txt to Unicode adapted from JS code */
+/* return 0 on success */
+/* return error code on fail */
 
 function rtfToUnicode($rtfName)
 {
-	$txtName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . "_foo.txt";
-	$uniName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".txt";
-	exec("/usr/bin/Ted --saveTo " .$rtfName. " " .$txtName);
-	exec("/usr/bin/node txt2uni.js " .$txtName. " " .$uniName);
-	exec("/bin/mv -f " .$rtfName. " history");
-	$uniCode = file_get_contents($uniName);
+	$rtfDir = dirname($rtfName);
+	$txtName = $rtfDir .'/'. basename($rtfName,".rtf") . "_foo.html";
+	$uniName = $rtfDir .'/'. basename($rtfName,".rtf") . ".utf";
+	//echo "rtfName = $rtfName\n";
+	//echo "txtName = $txtName\n";
+	//echo "uniName = $uniName\n";
+	exec("/usr/bin/Ted --saveTo " .$rtfName. " " .$txtName, $retarr, $retval);
+	if ($retval != 0) {
+		exec("/bin/mv -f " .$rtfName. " " .$rtfDir. "/errors"); 
+		return 1;
+	}
+	//exec("/bin/sed -i 's/X//g;s/Y//g' " .$txtName, $retarr, $retval);
+	//if ($retval != 0) return $retval;
+	exec("/bin/sed -i 's/×Y/./g;s/ÎÀF/dÀFa/g' " .$txtName, $retarr, $retval);
+	if ($retval != 0) return 2;
+
+	$uniCodeArr = htmlToUni($txtName);
 
 	$htmlName = dirname($rtfName) .'/'. basename($rtfName,".rtf") . ".html";
 	file_put_contents($htmlName, "
@@ -44,29 +60,18 @@ function rtfToUnicode($rtfName)
     <meta charset=\"utf-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
     <title>Convert RTF to Unicode</title>
-
-    <link href=\"../boostrap/css/bootstrap.min.css\" rel=\"stylesheet\">
-    
-  </head>
-
-  <body>
-
-    <div class=\"navbar navbar-default navbar-static-top\">
-      <div class=\"container\">
-        <div class=\"navbar-header\">
-          <a class=\"navbar-brand\" href=\"index.php\">Convert RTF to Unicode</a>
-        </div>
-      </div>
-    </div>
-
-
-    <div class=\"container\">
-    
-	      <div class=\"row\">
-	<p><a href=\"..\" class=\"btn btn-primary btn-xs\" role=\"button\">Go Back</a></p>
+	<style>
+    		@import url(http://fonts.googleapis.com/earlyaccess/notosansdevanagari.css);
+		body { font-family: 'Noto Sans Devanagari', sans-serif };
+	</style>
+	<body>
 	");
-	file_put_contents($htmlName, $uniCode, FILE_APPEND | LOCK_EX);
-	file_put_contents($htmlName, "</div></body></html>", FILE_APPEND | LOCK_EX);
+
+	foreach($uniCodeArr as $uniCode)
+	{
+		file_put_contents($htmlName, "<div>" .$uniCode. "</div>", FILE_APPEND | LOCK_EX);
+	}
+	file_put_contents($htmlName, "</body></html>", FILE_APPEND | LOCK_EX);
 
     	/*
 	$legacyCode = file_get_contents($txtName);
@@ -75,8 +80,36 @@ function rtfToUnicode($rtfName)
     	file_put_contents($uniName, $uniCode);
 	*/
 
-	return;
+	return 0;
 
+}
+
+
+/* parse html of Ted output, convert font to Unicode */ 
+/* returns Unicode array */
+
+function htmlToUni($htmlName)
+{
+	
+	$jsFile = "/home/kadmin/work/ht/wordpress/wp-content/themes/doc2unicode/txt2uni.js";
+	$tmpFile = "/home/kadmin/work/ht/wordpress/wp-content/themes/doc2unicode/uploads/tmp";
+
+	$dom = new Dom;
+	$dom->loadFromFile($htmlName);
+	$contents = $dom->find('span');
+	//echo "count = " .count($contents); echo "\n";
+
+	$i = 0;	
+	foreach ($contents as $content)
+	{
+		//$class = $content->getAttribute('class');
+		//echo "class = " .$class; echo "\n";
+		$html = $content->innerHtml;
+		file_put_contents($tmpFile,$html);
+		exec("/usr/bin/node " .$jsFile. " " .$tmpFile, $retarr, $retval);
+		if ($retval != 0) return 3;
+	}
+	return $retarr;
 }
 
 
