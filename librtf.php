@@ -64,12 +64,15 @@ function rtfToUnicode($rtfName)
     		@import url(http://fonts.googleapis.com/earlyaccess/notosansdevanagari.css);
 		body { font-family: 'Noto Sans Devanagari', sans-serif };
 	</style>
-	<body>
+  </head>	
+  <body>
 	");
 
+	file_put_contents($uniName, "Unicode\n");
 	foreach($uniCodeArr as $uniCode)
 	{
 		file_put_contents($htmlName, "<div>" .$uniCode. "</div>", FILE_APPEND | LOCK_EX);
+		file_put_contents($uniName, $uniCode, FILE_APPEND | LOCK_EX);
 	}
 	file_put_contents($htmlName, "</body></html>", FILE_APPEND | LOCK_EX);
 
